@@ -25,13 +25,13 @@ let linkSharing = [%css
       ~blur=`px(4),
       `hex("00000040"),
     ),
-    padding2(`px(16), `px(0)),
+    padding2(`rem(1.6), `rem(1.2)),
   ]
 ];
 
 let shareWrapper = [%css [position(`relative)]];
 
-let shareLinkTitle = [%css [fontSize(`px(24)), marginBottom(`px(16))]];
+let shareLinkTitle = [%css [fontSize(`px(24)), marginBottom(`px(16)), width(`pct(100.))]];
 
 let shareLinkURL = [%css
   [
@@ -124,9 +124,6 @@ let make = (~peerId, _children) => {
     let sharingLink = sharingLink(peerId);
 
     <div className=linkSharing>
-      <p className=shareLinkTitle>
-        {string("Share the following link to invite people to your music")}
-      </p>
       <div
         className={
           Cn.make([
@@ -134,6 +131,10 @@ let make = (~peerId, _children) => {
             shareWrapper,
           ])
         }>
+        // TODO: refactor to use appropriate <label> for a11y
+      <label className=shareLinkTitle htmlFor="shareLinkURL">
+        {string("Share the following link to invite people to your music")}
+      </label>
         <input
           className=shareLinkURL
           value=sharingLink

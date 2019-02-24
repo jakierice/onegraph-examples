@@ -9,7 +9,7 @@ let header = (~centered) => [%css
   ]
 ];
 
-let pageTitle = [%css [fontSize(`px(56)), marginBottom(`px(16))]];
+let pageTitle = [%css [fontSize(`px(72)), marginBottom(`px(16))]];
 let pageSubTitle = [%css
   [fontSize(`px(32)), marginBottom(`px(64)), fontWeight(200)]
 ];
@@ -30,20 +30,20 @@ let footer = [%css
     position(`fixed),
     bottom(`px(0)),
     backgroundColor(`hex("000")),
-    width(`vw(100.)),
+    maxWidth(`vw(80.)),
     height(`px(48)),
   ]
 ];
 
-let footerLink = [%css
-  [
-    margin2(`px(0), `px(4)),
-    color(`hex("fff")),
-    textDecoration(`underline),
-    transitionDuration(`ms(200)),
-    select(":hover", [color(`hex("cfcfcf"))]),
-  ]
-];
+// let footerLink = [%css
+//   [
+//     margin2(`px(0), `px(4)),
+//     color(`hex("fff")),
+//     textDecoration(`underline),
+//     transitionDuration(`ms(200)),
+//     select(":hover", [color(`hex("cfcfcf"))]),
+//   ]
+// ];
 
 type logInStatus =
   | HandshakingToken
@@ -132,109 +132,95 @@ let make = _children => {
     ReasonReact.(
       <div>
         <header
-          className={
-            Cn.make([
-              SharedCss.flexWrapper(~justify=`center, ~align=`center),
-              SharedCss.appearAnimation(~direction=`normal, ~delayMs=0),
-              header(~centered=self.state.logInStatus == HandshakingToken),
-            ])
-          }>
+          className={Cn.make([
+            SharedCss.flexWrapper(~justify=`center, ~align=`center),
+            SharedCss.appearAnimation(~direction=`normal, ~delayMs=0),
+            header(~centered=self.state.logInStatus == HandshakingToken),
+          ])}>
           <h1 className=pageTitle> {string("SpotDJ")} </h1>
         </header>
         <main className=main>
-          {
-            switch (self.state.logInStatus) {
-            | HandshakingToken => <div> {string("Handshaking")} </div>
-            | LoggedOut =>
-              <div
-                className={
-                  Cn.make([
-                    SharedCss.appearAnimation(
-                      ~direction=`normal,
-                      ~delayMs=400,
-                    ),
-                    welcome,
-                  ])
-                }>
-                <h2 className=pageSubTitle>
-                  {string("Share your Spotify music live")}
-                </h2>
-                <LogIn
-                  auth={self.state.auth}
-                  logIn=(() => self.send(SetLogInStatus(LoggedIn)))
-                />
-              </div>
-            | LoggedIn =>
-              <GetCurrentlyPlayingQuery
-                updateTrackHistoryList=(
-                  id => self.send(UpdateTrackHistoryList(id))
-                )>
-                ...(
-                     (
-                       {
-                         userName,
-                         userIconUrl,
-                         songName,
-                         artistName,
-                         isPlaying,
-                         progressPct,
-                         albumImageUrl,
-                         trackId,
-                         positionMs,
-                         isPremiumSpotify,
-                       },
-                     ) =>
-                       <CurrentlyPlayingContainer
-                         auth={self.state.auth}
-                         artistName
-                         isPlaying
-                         progressPct
-                         songName
-                         userName
-                         userIconUrl
-                         albumImageUrl
-                         positionMs
-                         trackId
-                         setLogOut={
-                           () => self.send(SetLogInStatus(LoggedOut))
-                         }
-                         trackHistoryList={self.state.trackHistoryList}
-                         isPremiumSpotify
-                       />
-                   )
-              </GetCurrentlyPlayingQuery>
-            }
-          }
+          {switch (self.state.logInStatus) {
+           | HandshakingToken => <div> {string("Handshaking")} </div>
+           | LoggedOut =>
+             <div
+               className={Cn.make([
+                 SharedCss.appearAnimation(~direction=`normal, ~delayMs=400),
+                 welcome,
+               ])}>
+               <h2 className=pageSubTitle>
+                 {string("Share your Spotify music live")}
+               </h2>
+               <LogIn
+                 auth={self.state.auth}
+                 logIn={() => self.send(SetLogInStatus(LoggedIn))}
+               />
+             </div>
+           | LoggedIn =>
+             <GetCurrentlyPlayingQuery
+               updateTrackHistoryList={id =>
+                 self.send(UpdateTrackHistoryList(id))
+               }>
+               ...{(
+                 {
+                   userName,
+                   userIconUrl,
+                   songName,
+                   artistName,
+                   isPlaying,
+                   progressPct,
+                   albumImageUrl,
+                   trackId,
+                   positionMs,
+                   isPremiumSpotify,
+                 },
+               ) =>
+                 <CurrentlyPlayingContainer
+                   auth={self.state.auth}
+                   artistName
+                   isPlaying
+                   progressPct
+                   songName
+                   userName
+                   userIconUrl
+                   albumImageUrl
+                   positionMs
+                   trackId
+                   setLogOut={() => self.send(SetLogInStatus(LoggedOut))}
+                   trackHistoryList={self.state.trackHistoryList}
+                   isPremiumSpotify
+                 />
+               }
+             </GetCurrentlyPlayingQuery>
+           }}
         </main>
-        <div
-          className={
-            Cn.make([
-              SharedCss.flexWrapper(~justify=`center, ~align=`center),
-              footer,
-            ])
-          }>
-          {string("Built by ")}
-          <a
-            className=footerLink
-            href="https://twitter.com/yukims19"
-            target="_blank">
-            {string(" @yukims19")}
-          </a>
-          {string(" on top of ")}
-          <a
-            className=footerLink
-            href="https://www.onegraph.com/"
-            target="_blank">
-            {string(" OneGraph ")}
-          </a>
-          {string(" view the source on ")}
-          <a
-            className=footerLink
-            href="https://github.com/OneGraph/onegraph-examples/tree/master/spotify-dj"
-            target="_blank">
-            {string("GitHub")}
-          </a>
-        </div>
+        // <div
+        //   className={Cn.make([
+        //     SharedCss.flexWrapper(~justify=`center, ~align=`center),
+        //     footer,
+        //   ])}>
+        //   {string("Built by ")}
+        //   <a
+        //     className=footerLink
+        //     href="https://twitter.com/yukims19"
+        //     target="_blank">
+        //     {string(" @yukims19")}
+        //   </a>
+        //   {string(" on top of ")}
+        //   <a
+        //     className=footerLink
+        //     href="https://www.onegraph.com/"
+        //     target="_blank">
+        //     {string(" OneGraph ")}
+        //   </a>
+        //   {string(" view the source on ")}
+        //   <a
+        //     className=footerLink
+        //     href="https://github.com/OneGraph/onegraph-examples/tree/master/spotify-dj"
+        //     target="_blank">
+        //     {string("GitHub")}
+        //   </a>
+        // </div>
       </div>
     ),
 };
